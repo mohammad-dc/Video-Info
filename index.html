@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Vide Info</title>
+  </head>
+  <body>
+    <div class="app">
+      <h1>Video Info</h1>
+      <form>
+        <div>
+          <label>Select a video</label>
+          <input type="file" accept=".mp4" />
+        </div>
+        <div class="video-render"></div>
+        <button type="submit">Get The Video Length</button>
+      </form>
+
+      <h6></h6>
+
+      <div class="alert">
+        <p><strong>&#x274C; Alert: </strong>There's no video</p>
+      </div>
+    </div>
+    <script>
+      const inputFile = document.querySelector("input");
+      const videoRender = document.querySelector(".video-render");
+      const form = document.querySelector("form");
+      const timeH6 = document.querySelector("h6");
+      const alertMessage = document.querySelector(".alert");
+
+      let time = "";
+      inputFile.addEventListener("change", () => {
+        if (inputFile.files[0]) {
+          let path = inputFile.files[0].path;
+          videoRender.innerHTML = `
+          <video height="250px">
+            <source src="file:///${path.replaceAll(
+              " ",
+              "%20"
+            )}" type="video/mp4" />
+          </video>
+          `;
+          const video = document.querySelector("video");
+          video.onloadedmetadata = function () {
+            time = parseVideoDurationToTime(video.duration);
+          };
+        }
+      });
+
+      function parseVideoDurationToTime(duration) {
+        var hour = parseInt(duration / 3600);
+        if (hour < 10) {
+          hour = "0" + hour;
+        }
+        var minute = parseInt((duration % 3600) / 60);
+        if (minute < 10) {
+          minute = "0" + minute;
+        }
+        var second = Math.ceil(duration % 60);
+        if (second < 10) {
+          second = "0" + second;
+        }
+        return hour + ":" + minute + ":" + second;
+      }
+
+      form.addEventListener("submit", (evt) => {
+        evt.preventDefault();
+        if (inputFile.files[0]) {
+          timeH6.innerHTML = `Video duration: ${time}`;
+          alertMessage.style.display = "none";
+        } else {
+          alertMessage.style.display = "block";
+        }
+      });
+    </script>
+  </body>
+</html>
